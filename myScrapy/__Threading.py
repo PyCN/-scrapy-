@@ -2,25 +2,7 @@ import threading
 import Queue
 
 from lxml import etree
-
-import engine_Manager
-
-class ScrapyWorker(threading.Thread, engine_Manager):
-    def __init__(self, workQueue, resultQueue, **kwargs):
-        super(ScrapyWorker,self).__init__(self, **kwargs)
-        self.engine = super(threading.Thread,self)
-        self.workQueue = workQueue
-        self.resultQueue = resultQueue
-
-    def run(self):
-        while (not self.workQueue.empty()):
-            res = self.workQueue.get(False)
-            res_url = res.get()
-            html = etree.HTML(res_url.lower.decode("utf-8"))
-            response = res.func(html)
-            if (isinstance(response, object)):
-                self.engine.Crawer_next(response)
-
+from engine import ScrapyWorker
 
 class ThreadManager(object):
     def __init__(self, num_threading = 10):
