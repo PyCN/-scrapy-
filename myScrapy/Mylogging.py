@@ -9,6 +9,6 @@ logging.basicConfig(level=logging.INFO,
 def INFO(str):
 	logging.info(str)
 
-def warning(str):
+def WARNING(str):
 	logging.warning(str)
 
