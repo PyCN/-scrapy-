@@ -24,12 +24,16 @@ class engine_Manager(object):
 
         while True:
             try:
-                if(res_object.method == "GET"):
+                if(request_object.method == "GET"):
                     res_object = request_object.next()
                     schedule.AddTodo_Get(res_object)
-                elif(res_object.method == "POST"):
+                elif(request_object.method == "POST"):
                     res_object = request_object.next()
                     schedule.AddTodo_Post(res_object)
+                elif(request_object.method == "DOWNLOAD"):
+                    res_object = request_object.next()
+                    schedule.Download(res_object)
+
 
             except StopIteration:
                 INFO("[engine] [senToSchedule] generation is empty")
