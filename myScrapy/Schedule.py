@@ -57,7 +57,7 @@ class Schedule(object):
 
 	def AddTodo_Post(self, object):
 		if not isinstance(object, object):
-			WARNING(""[Schedule] [POST]" [POST]the wrong params!!")
+			WARNING("[Schedule] [POST] [POST]the wrong params!!")
 			return
 
 		obj = object
@@ -110,7 +110,7 @@ class Schedule(object):
 			return False
 
 	def Judge_empty_post(self):
-		if self.result_post.empty:
+		if self.result_post.empty():
 			return True
 		else:
 			return False
@@ -118,6 +118,11 @@ class Schedule(object):
 	def PutToDownload(self, object):
 		obj = object
 		self.download_list.append(obj)
+
+	def GetToDownload(self):
+		list = []
+		list = copy.deepcopy(self.download_list)
+		return list
 
 
 schedule = Schedule()
