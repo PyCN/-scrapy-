@@ -4,6 +4,8 @@ import Queue.Queue
 
 import Mylogging
 
+
+
 class Schedule(object):
 	def __init__(self):
 		self.Works_get = []
@@ -11,6 +13,8 @@ class Schedule(object):
 
 		self.result_get = []
 		self.result_post = []
+
+		self.download_list = []
 		''' 
 		Addto_GET函数用来get请求的参数写入队列里面，等待调度
 
@@ -98,6 +102,23 @@ class Schedule(object):
 			return
 
 		self.result_post.append(response)
+
+	def Judge_empty_get(self):
+		if self.result_get.empty:
+			return True
+		else:
+			return False
+
+	def Judge_empty_post(self):
+		if self.result_post.empty:
+			return True
+		else:
+			return False
+
+	def PutToDownload(self, object):
+		obj = object
+		self.download_list.append(obj)
+
 
 schedule = Schedule()
 

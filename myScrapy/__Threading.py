@@ -41,9 +41,13 @@ class ScrapyWorker(threading.Thread):
                     headers = list[2]
                     callback = list[3]
 
+                    item = []
+
                     response = self.get(url = url, method = method, headers = headers)
                     final_res = etree.HTML(response.lower.decode("utf-8"))
-                    schedule.Putresult_Get(final_res)
+                    item.append(final_res)
+                    item.append(callback)
+                    schedule.Putresult_Get(item)
 
                 elif(method == "POST"):
                     url = list[0]
@@ -52,9 +56,13 @@ class ScrapyWorker(threading.Thread):
                     headers = list[3]
                     callback = list[4]
 
+                    item = []
+
                     response = self.post(url = url, method = method, request = request, headers = headers)
                     final_res = etree.HTML(response.lower.decode("utf-8"))
-                    schedule.Putresult_Post(final_res)
+                    item.append(final_res)
+                    item.append(callback)
+                    schedule.Putresult_Post(item)
 
     def get(self, url, method, headers):
         http = str_to_unicode(text = url, encoding = 'utf-8')
