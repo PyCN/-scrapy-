@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 import os
 import sys
+ 
+import requests
 
 import Mylogging
 from Schedule import schedule
@@ -23,13 +25,18 @@ class DownloadWorker(threading.Thread):
     def run(self):
 
 
-    def download_picture(self, url, path = ""):
+    def download_picture(self, image_url, path = ""):
     	if(not path):
     		path = os.getcwd()
 
-    	
+        os.path.join(path, '{}.jpg'.format(image_url))
 
-
+    	try:
+            image = requests.get(image_url, stream = True)
+            with open(path, 'wb') as img:
+                img.write(image.content)
+        except Exception as e:
+            WARNING(e)
 
 
 class Download(object):
