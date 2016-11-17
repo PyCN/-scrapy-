@@ -2,7 +2,7 @@ from engine import engine_manager
 
 class mycrawer(engine_manager):
     def start_request(self):
-        pass
+        url = "www.baidu.com"
 
     def start_pase1(self):
         pass
