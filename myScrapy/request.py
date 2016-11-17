@@ -1,5 +1,6 @@
-import requests
+# -*- coding: UTF-8 -*-
 
+import Mylogging
 """
 this documention deal with request
 """
@@ -16,60 +17,53 @@ def str_to_unicode(text, encoding='utf-8'):
 
 
 class Request(object):
-    __slots__ = ['encoding','request','url','method','headers','callback']
+    __slots__ = ['encoding','formdata','url','method','headers','callback']
 
     def __init__(self, *args, **kwargs):
 
-        self.encoding = "utf-8"
+        try:
+            self.url = kwargs('url').pop()
+            INFO("[request] url to Crawer = {}".format(self.url))
+        except Exception:
+            self.url = None
+            WARNING("[request] without url???, this request will be stopped!!")
+            return
 
-        if kwargs:
-            try:
-                formdata = kwargs.pop('formdata')
-            except:
-                formdata = None
+        try:
+            self.method = kwargs('method').pop()
+        except Exception:
+            self.method = None
+            WARNING("[request] without method auto set method to 'GET'")
+            self.method = 'GET'
 
-            try:
-                http = kwargs.pop('url')
-            except:
-                http = None
+        try:
+            formdata = kwargs('formdata').pop()
+            if(self.method == "GET"):
+                WARNING("[request] ...there exists dict of formdata turn 'GET' to 'POST'")
+                self.method = 'POST'
+        except Exception:
+            formdata = None
+            if(self.method == 'POST'):
+                WARNING("[request]...formdata is empty auto turn 'POST' to 'GET'")
+                self.method = 'GET'
 
-            try:
-                method = kwargs.pop('method')
-            except:
-                method = None
+        if formdata:
+            items = formdata.iteritems() if isinstance(formdata, dict) else formdata
+            self.formdata = [(str_to_unicode(k, encoding = 'utf-8'), str_to_unicode(v, encoding = 'utf-8')) \
+                    for k,v in items]
 
-            try:
-                headers = kwargs.pop('headers')
-            except:
-                headers = None
+        try:
+            self.headers = kwargs('headers').pop()
+        else Exception:
+            self.headers = None
+            INFO("[request] without header, set header to None")
 
-            try:
-                func = kwargs.pop('callback')
-            except:
-                func = None
+        try:
+            self.callback = kwargs('callback').pop()
+        else Exception:
+            self.callback = None
+            INFO("[request] nothing to callback!!")
 
-            if formdata:
-                items = formdata.iteritems() if isinstance(formdata, dict) else formdata
-                self.request = [(str_to_unicode(k, self.encoding), str_to_unicode(v, self.encoding)) \
-                        for k,v in items]
-
-            self.url = http if http else None
-            self.method = method if method else None
-            self.func = func if func else  None
-
-    def get():
-
-        http_url = str_to_unicode(self.url, self.encoding)
-        response = requests.get(url = http_url, headers = headers)
-        response.encoding = 'utf-8'
-        return response.text
-
-    def post():
-
-        http_url = str_to_unicode(self.url, self.encoding)
-        response = requests.post(url = http_url, data = self.request, headers = self.headers)
-        response.encoding = 'utf-8'
-        return response.text
 
 
 
