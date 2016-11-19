@@ -1,2 +1,3 @@
 # -scrapy-
-仿scrapy框架，现在框架还未成型，稍后会放出具体流程图。
+流程图
+ https://github.com/PyCN/-scrapy-/Flow chart/演示文稿1.jpg 
