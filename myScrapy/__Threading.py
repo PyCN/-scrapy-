@@ -3,10 +3,9 @@ import Queue
 
 import requests
 from lxml import etree
-from engine import ScrapyWorker
 
 from Schedule import schedule
-import Mylogging
+from Mylogging import INFO,WARNING
 
 
 
@@ -23,16 +22,17 @@ def str_to_unicode(text, encoding='utf-8'):
 
 class ScrapyWorker(threading.Thread):
     def __init__(self, workQueue, resultQueue, **kwargs):
-        super(ScrapyWorker,self).__init__(self, **kwargs)
+        super(ScrapyWorker,self).__init__(**kwargs)
         self.workQueue = workQueue
         self.resultQueue = resultQueue
 
     def run(self):
         while (not self.workQueue.empty()):
             res = self.workQueue.get(False)
+            print res.qsize()
             
             while not res.empty():
-                list = res.pop()
+                list = res.get()
                 method = list[1]
 
                 if (method == "GET"):
@@ -43,10 +43,12 @@ class ScrapyWorker(threading.Thread):
 
                     item = []
 
-                    response = self.get(url = url, method = method, headers = headers)
-                    final_res = etree.HTML(response.lower.decode("utf-8"))
+                    response = self.get(url = url, method = method, headers = headers).content
+                    final_res = etree.HTML(response.lower().decode("utf-8"))
                     item.append(final_res)
                     item.append(callback)
+                    print len(item)
+                    print "yy"
                     schedule.Putresult_Get(item)
 
                 elif(method == "POST"):
@@ -60,6 +62,7 @@ class ScrapyWorker(threading.Thread):
 
                     response = self.post(url = url, method = method, request = request, headers = headers)
                     final_res = etree.HTML(response.lower.decode("utf-8"))
+                    INFO('final_res = {}'.format(final_res))
                     item.append(final_res)
                     item.append(callback)
                     schedule.Putresult_Post(item)
@@ -98,11 +101,12 @@ class ThreadManager(object):
                 self.workers.append(worker)
 
 
-    def add_func_get(self, func):
+    def add_func_get(self):
         item = schedule.GetfromWorks_Get()
         self.workQueue.put(item)
+        print item.qsize()
 
-    def add_func_post(self, func):
+    def add_func_post(self):
         item = schedule.GetfromWorks_Post()
         self.workQueue.put(item)
 

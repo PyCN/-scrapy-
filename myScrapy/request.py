@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-import Mylogging
+from Mylogging import INFO,WARNING
 """
 this documention deal with request
 """
@@ -18,11 +18,10 @@ def str_to_unicode(text, encoding='utf-8'):
 
 class Request(object):
     __slots__ = ['encoding','formdata','url','method','headers','callback']
-
     def __init__(self, *args, **kwargs):
 
         try:
-            self.url = kwargs('url').pop()
+            self.url = kwargs.pop('url')
             INFO("[request] url to Crawer = {}".format(self.url))
         except Exception:
             self.url = None
@@ -30,14 +29,14 @@ class Request(object):
             return
 
         try:
-            self.method = kwargs('method').pop()
+            self.method = kwargs.pop('method')
         except Exception:
             self.method = None
             WARNING("[request] without method auto set method to 'GET'")
             self.method = 'GET'
 
         try:
-            formdata = kwargs('formdata').pop()
+            formdata = kwargs.pop('formdata')
             if(self.method == "GET"):
                 WARNING("[request] ...there exists dict of formdata turn 'GET' to 'POST'")
                 self.method = 'POST'
@@ -53,14 +52,14 @@ class Request(object):
                     for k,v in items]
 
         try:
-            self.headers = kwargs('headers').pop()
-        else Exception:
+            self.headers = kwargs.pop('headers')
+        except Exception:
             self.headers = None
             INFO("[request] without header, set header to None")
 
         try:
-            self.callback = kwargs('callback').pop()
-        else Exception:
+            self.callback = kwargs.pop('callback')
+        except Exception:
             self.callback = None
             INFO("[request] nothing to callback!!")
 

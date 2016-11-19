@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
 import copy
-import Queue.Queue
+from Queue import Queue
 
-import Mylogging
-
+from Mylogging import INFO,WARNING
+from request import Request
 
 
 class Schedule(object):
@@ -20,28 +20,31 @@ class Schedule(object):
 
 		'''
 	def AddTodo_Get(self, object):
-		if not isinstance(object, object):
+		if not isinstance(object, Request):
 			WARNING("[Schedule] [GET]the wrong params!!")
 			return
 		obj = object
 		item = []
 
-		if not exists obj.url:
+		if obj.url is None:
 			WARNING("[Schedule] [GET] without url ??")
 			return
 
 		item.append(obj.url)
 		item.append(obj.method)
 		item.append(obj.headers)
-		item.append(obj.func)
-		INFO("[Schedule] [GET] url = %s, method = %s, hearders = %s",obj.url, obj.method, obj.headers)
+		item.append(obj.callback)
+		INFO("[Schedule] [GET] url = {}, method = {}, hearders = {}".format(obj.url, obj.method, obj.headers))
 		self.Works_get.append(item)
+		print len(self.Works_get)
 
-	def GetfromWorks_Get():
+	def GetfromWorks_Get(self):
 		item_Que = Queue()
-
-		while (not self.Works_get.empty()):
+		print len(self.Works_get)
+		print "ll"
+		while (len(self.Works_get)):
 			item = self.Works_get.pop()
+			print item[0],item[1]
 			item_Que.put(item)
 
 		return item_Que
@@ -63,7 +66,7 @@ class Schedule(object):
 		obj = object
 		item = []
 
-		if not (exists obj.url or exists obj.request):
+		if (obj.url is None or obj.request is None):
 			WARNING("[Schedule] [POST] without url or request??")
 			return
 
@@ -76,21 +79,24 @@ class Schedule(object):
 		self.Works_post.append(item)
 
 	def Putresult_Get(self, response):
-		if not isinstance(response, str):
+		if not isinstance(response, list):
 			WARNING("[Schedule] [result] the wrong params!!")
 			return
-
+		print len(response)
+		print "mm"
 		self.result_get.append(response)
 
-	def Get_result_Get():
-		item_list = []
+	def Get_result_Get(self):
 
-		item_list = copy.deepcopy(self.result_get)
+		item = self.result_get.pop()
+		item_list = copy.deepcopy(item)
+		print 'xx'
+		print len(self.result_get)
+		print len(item_list)
 		INFO("[Schedule] [result] get result !!")
 		return item_list
 
-	def Get_result_Post():
-		item_list = []
+	def Get_result_Post(self):
 
 		item_list = copy.deepcopy(self.result_post)
 		INFO("[Schedule] [result] get post result !!")
@@ -104,7 +110,7 @@ class Schedule(object):
 		self.result_post.append(response)
 
 	def Judge_empty_get(self):
-		if self.result_get.empty:
+		if not len(self.result_get):
 			return True
 		else:
 			return False

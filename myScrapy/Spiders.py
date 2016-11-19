@@ -1,13 +1,14 @@
-from engine import engine_manager
 
-class mycrawer(engine_manager):
+
+from request import Request
+class mycrawer(object):
     def start_request(self):
-        url = "www.baidu.com"
+        url = "http://www.baidu.com"
+        yield Request(url = url, method = 'GET', callback = self.start_parse)
 
-    def start_pase1(self):
-        pass
+    def start_parse(self, response):
+        print response
 
-    def start_pase2(self):
-        pass
+spider = mycrawer()
 
 
