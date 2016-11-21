@@ -17,7 +17,7 @@ def str_to_unicode(text, encoding='utf-8'):
 
 
 class Request(object):
-    __slots__ = ['encoding','formdata','url','method','headers','callback']
+    __slots__ = ['encoding','formdata','url','method','headers','callback','filename','download_type']
     def __init__(self, *args, **kwargs):
 
         try:
@@ -63,7 +63,18 @@ class Request(object):
             self.callback = None
             INFO("[request] nothing to callback!!")
 
+        try:
+            self.filename = kwargs.pop('filename')
+        except Exception:
+            self.filename = None
+            INFO("[request] without filename.......")
 
+        try:
+            self.download_type = kwargs.pop('download_type')
+        except Exception:
+            if self.method == "DOWNLOAD":
+                WARNING("[request] method is download,but there isn't exists and method??, stop it!!")
+                return
 
 
 
