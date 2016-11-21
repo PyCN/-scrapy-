@@ -47,8 +47,6 @@ class ScrapyWorker(threading.Thread):
                     final_res = etree.HTML(response.lower().decode("utf-8"))
                     item.append(final_res)
                     item.append(callback)
-                    print len(item)
-                    print "yy"
                     schedule.Putresult_Get(item)
 
                 elif(method == "POST"):
@@ -97,7 +95,7 @@ class ThreadManager(object):
         while len(self.workers):
             worker = self.workers.pop()
             worker.join()
-            if worker.isAlive() and not self.workers.empty():
+            if worker.isAlive() and not len(self.workers):
                 self.workers.append(worker)
 
 

@@ -36,12 +36,10 @@ class Schedule(object):
 		item.append(obj.callback)
 		INFO("[Schedule] [GET] url = {}, method = {}, hearders = {}".format(obj.url, obj.method, obj.headers))
 		self.Works_get.append(item)
-		print len(self.Works_get)
 
 	def GetfromWorks_Get(self):
 		item_Que = Queue()
-		print len(self.Works_get)
-		print "ll"
+
 		while (len(self.Works_get)):
 			item = self.Works_get.pop()
 			print item[0],item[1]
@@ -90,9 +88,7 @@ class Schedule(object):
 
 		item = self.result_get.pop()
 		item_list = copy.deepcopy(item)
-		print 'xx'
-		print len(self.result_get)
-		print len(item_list)
+
 		INFO("[Schedule] [result] get result !!")
 		return item_list
 
@@ -122,13 +118,46 @@ class Schedule(object):
 			return False
 
 	def PutToDownload(self, object):
+		if not isinstance(object, Request):
+			WARNING("[Schedule] input incorrect download params, stop!!")
 		obj = object
-		self.download_list.append(obj)
+
+		url = obj.url
+		if url is None:
+			WANRING("[Schedule] url is empty ??   stop schedule!!!")
+			return
+		else:
+			INFO("[Schedule] The url to download is {}".format(url))
+
+		download_type = obj.download_type
+		if download_type is None:
+			WANRING("[Schedule] download_type is None, stop schedule")
+		
+		method = obj.method
+		if method != "DOWNLOAD":
+			WARNING("[Schedule] method is not 'DOWNLOAD' , switch method to download")
+			method == "DOWNLOAD"
+
+
+		filename = obj.filename
+		if filaname is None:
+			INFO("[Schedule] there is not exists filename")
+		else:
+			INFO("[Schedule] [download] filename is {}".format(filename))
+
+		item = []
+
+		item.append(url)
+		item.append(download_type)
+		item.append(method)
+		item.append(filename)
+
+		self.download_list.append(item)
 
 	def GetToDownload(self):
-		list = []
-		list = copy.deepcopy(self.download_list)
-		return list
+		
+		item = copy.deepcopy(self.download_list)
+		return item
 
 
 schedule = Schedule()
