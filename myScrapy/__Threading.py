@@ -1,7 +1,8 @@
 import threading
 import Queue
+import urllib2
+import urllib
 
-import requests
 from lxml import etree
 
 from Schedule import schedule
@@ -27,57 +28,41 @@ class ScrapyWorker(threading.Thread):
         self.resultQueue = resultQueue
 
     def run(self):
-        while (not self.workQueue.empty()):
-            res = self.workQueue.get(False)
-            print res.qsize()
-            
-            while not res.empty():
-                list = res.get()
-                method = list[1]
+        while not self.workQueue.empty():
+            item_obj = self.workQueue.get()
+            url = item_obj.url
+            method = item_obj.method if item_obj.method else 'GET'
+            cache = item_obj.cache
 
-                if (method == "GET"):
-                    url = list[0]
-                    method = list[1]
-                    headers = list[2]
-                    callback = list[3]
+            if method == 'GET':
+                response = self.get_url(url)
+                xpath_obj = self.deal_response_with_xpath(response)
+                cache.Response_Cache = xpath_obj
 
-                    item = []
-
-                    response = self.get(url = url, method = method, headers = headers).content
-                    final_res = etree.HTML(response.lower().decode("utf-8"))
-                    item.append(final_res)
-                    item.append(callback)
-                    schedule.Putresult_Get(item)
-
-                elif(method == "POST"):
-                    url = list[0]
-                    method = list[1]
-                    request = list[2]
-                    headers = list[3]
-                    callback = list[4]
-
-                    item = []
-
-                    response = self.post(url = url, method = method, request = request, headers = headers)
-                    final_res = etree.HTML(response.lower.decode("utf-8"))
-                    INFO('final_res = {}'.format(final_res))
-                    item.append(final_res)
-                    item.append(callback)
-                    schedule.Putresult_Post(item)
-
-    def get(self, url, method, headers):
-        http = str_to_unicode(text = url, encoding = 'utf-8')
-        response = requests.get(url = http, headers = headers)
-        response.encoding = 'utf-8'
-        return response
+            if method == 'POST':
+                pass
 
 
-    def post(self, url, method, request, headers):
-        http = str_to_unicode(text = url, encoding = 'utf-8')
-        response = requests.post(url = http, data = request , headers = headers)
-        response.encoding = 'utf-8'
-        return response
 
+    def get_url(self, url):
+
+        if not isinstance(url, str):
+            raise 'url must be a string'
+        req = urllib2.Request(url)
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError as e:
+            WARNING("%s", str(e))
+        the_page = response.read()
+
+        return the_page
+
+    def deal_response_with_xpath(self, content):
+        html = etree.HTML(content.decode('utf-8'))
+        return html
+
+    def post_url(self, url, ):
+        pass
 
 class ThreadManager(object):
     def __init__(self, num_threading = 10):
@@ -99,14 +84,17 @@ class ThreadManager(object):
                 self.workers.append(worker)
 
 
-    def add_func_get(self):
-        item = schedule.GetfromWorks_Get()
-        self.workQueue.put(item)
-        print item.qsize()
+    @property
+    def obj_content(self):
+        return self.workQueue
 
-    def add_func_post(self):
-        item = schedule.GetfromWorks_Post()
-        self.workQueue.put(item)
+    @obj_content.setter
+    def obj_content(self, obj_content):
+        if not isinstance(obj_content, list):
+            raise TypeError("url_content must be list type")
+
+        for obj_item in obj_content:
+            self.workQueue.put(obj_item)
 
     def start_thread(self):
         for w in self.workers:
