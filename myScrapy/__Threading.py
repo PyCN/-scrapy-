@@ -33,6 +33,7 @@ class ScrapyWorker(threading.Thread):
             url = item_obj.url
             method = item_obj.method if item_obj.method else 'GET'
             cache = item_obj.cache
+            formdata = item_obj.formdata if item_obj.formdata else None
 
             if method == 'GET':
                 response = self.get_url(url)
@@ -40,8 +41,9 @@ class ScrapyWorker(threading.Thread):
                 cache.Response_Cache = xpath_obj
 
             if method == 'POST':
-                pass
-
+                response = self.post_url(url, formdata)
+                xpath_obj = self.deal_response_with_xpath(response)
+                cache.Response_Cache = xpath_obj
 
 
     def get_url(self, url):
@@ -61,8 +63,20 @@ class ScrapyWorker(threading.Thread):
         html = etree.HTML(content.decode('utf-8'))
         return html
 
-    def post_url(self, url, ):
-        pass
+    def post_url(self, url, formdata):
+        if not isinstance(url, str):
+            raise 'url must be a string and fordata must be a dict'
+        data = urllib.urlencode(formdata)
+        req = urllib2.Request(url, data)
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.HTTPError as e:
+            WARNING('%s', str(e))
+
+        the_page = response.read()
+
+        return the_page
+
 
 class ThreadManager(object):
     def __init__(self, num_threading = 10):

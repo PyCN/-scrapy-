@@ -34,11 +34,16 @@ class Myscrapy(object):
             if req.url and req.method:
                 url = req.url
                 method = req.method
+                formdata = None
+
+                if method == 'POST':
+                    formdata = req.formdata
 
                 if req.callback is not None:
                     self.callback_func.append(req.callback)
 
-                Trans_obj = self.Trans(url = url, cache_obj = self.Cache, method = method)
+                Trans_obj = self.Trans(url = url, cache_obj = self.Cache, method = method) \
+                    if formdata is None else self.Trans(url=url, cache_obj=self.Cache, method=method, formdata = formdata)
                 self.content.append(Trans_obj)
 
         self._SendRequest()
