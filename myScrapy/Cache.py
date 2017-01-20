@@ -18,9 +18,11 @@ class Cache(object):
 
 
 class Trans(object):
-    __slots__ = ('url', 'method', 'cache')
+    __slots__ = ('url', 'method', 'cache','formdata')
 
     def __init__(self, **kwargs):
         self.url = kwargs.pop('url')
         self.method = kwargs.pop('method')
         self.cache = kwargs.pop('cache_obj')
+        temp_dict = kwargs.pop('formdata') if kwargs.pop('formdata') else None
+        self.formdata = [(k, v) for k, v in temp_dict.iteritems()]
