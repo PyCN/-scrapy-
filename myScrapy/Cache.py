@@ -24,5 +24,6 @@ class Trans(object):
         self.url = kwargs.pop('url')
         self.method = kwargs.pop('method')
         self.cache = kwargs.pop('cache_obj')
-        temp_dict = kwargs.pop('formdata') if kwargs.pop('formdata') else None
-        self.formdata = [(k, v) for k, v in temp_dict.iteritems()]
+        temp_dict = kwargs.get('formdata', None)
+        if temp_dict:
+            self.formdata = [(k, v) for k, v in temp_dict.iteritems()]

@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import os
 import sys
+import threading
  
 import requests
 
@@ -80,7 +81,7 @@ class DownloadWorker(threading.Thread):
 
     def download_picture(self, image_url, path = "", filename = ""):
     	if path is None:
-    		if Config_paser.locate is None:
+    	    if Config_paser.locate is None:
                 path = os.path.getcwd()
             else:
                 path = Config_paser.locate

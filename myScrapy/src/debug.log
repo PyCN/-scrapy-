@@ -1,4 +1,3 @@
-Fri, 20 Jan 2017 11:39:34 Mylogging.py[line:10] INFO [request] url to Crawer = https://www.baidu.com/
-Fri, 20 Jan 2017 11:39:34 Mylogging.py[line:10] INFO [request] without header, set header to None
-Fri, 20 Jan 2017 11:39:34 Mylogging.py[line:10] INFO [request] nothing to callback!!
-Fri, 20 Jan 2017 11:39:34 Mylogging.py[line:10] INFO [request] without filename.......
+Sun, 22 Jan 2017 09:16:10 Mylogging.py[line:10] INFO [request] url to Crawer = http://www.baidu.com/
+Sun, 22 Jan 2017 09:16:10 Mylogging.py[line:10] INFO [request] without header, set header to None
+Sun, 22 Jan 2017 09:16:10 Mylogging.py[line:10] INFO [request] without filename.......

@@ -62,7 +62,7 @@ class Myscrapy(object):
     def _getResponse(self):
         response = self.Cache.Response_Cache
         if len(self.callback_func) > 0:
-            for func in callback_func:
+            for func in self.callback_func:
                 generator = func(response = response)
                 self._dealCallBack(generator)
 
@@ -70,20 +70,22 @@ class Myscrapy(object):
 
 
     def _dealCallBack(self, req_generator):
+        try:
+            for req in req_generator:
+                if req.url and req.method:
+                    url = req.url
+                    method = req.method
 
-        for req in req_generator:
-            if req.url and req.method:
-                url = req.url
-                method = req.method
+                    if req.callback is not None:
+                        self.callback_func.append(req.callback)
 
-                if req.callback is not None:
-                    self.callback_func.append(req.callback)
+                    Trans_obj = self.Trans(url, method)
 
-                Trans_obj = self.Trans(url, method)
+                    self.callback_func.append(Trans_obj)
 
-                self.callback_func.append(Trans_obj)
-
-        self._SendRequest()
+            self._SendRequest()
+        except:
+            return
 
 
 

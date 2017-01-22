@@ -33,7 +33,10 @@ class ScrapyWorker(threading.Thread):
             url = item_obj.url
             method = item_obj.method if item_obj.method else 'GET'
             cache = item_obj.cache
-            formdata = item_obj.formdata if item_obj.formdata else None
+            try:
+                formdata = item_obj.formdata if item_obj.formdata else None
+            except:
+                formdata = None
 
             if method == 'GET':
                 response = self.get_url(url)
@@ -53,8 +56,8 @@ class ScrapyWorker(threading.Thread):
         req = urllib2.Request(url)
         try:
             response = urllib2.urlopen(req)
-        except urllib2.URLError as e:
-            WARNING("%s", str(e))
+        except urllib2.HTTPError:
+            raise 'get url error!!'
         the_page = response.read()
 
         return the_page
@@ -70,8 +73,8 @@ class ScrapyWorker(threading.Thread):
         req = urllib2.Request(url, data)
         try:
             response = urllib2.urlopen(req)
-        except urllib2.HTTPError as e:
-            WARNING('%s', str(e))
+        except urllib2.HTTPError:
+            raise 'get url error!!'
 
         the_page = response.read()
 
