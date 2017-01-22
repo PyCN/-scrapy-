@@ -56,18 +56,18 @@ class Myscrapy(object):
         self.ReqtoWeb.start_thread()
         self.ReqtoWeb.waitForallThreadcompelete()
 
-        del self.content[:]
+        self.content.pop(0)
         self._getResponse()
 
     def _getResponse(self):
         response = self.Cache.Response_Cache
         if len(self.callback_func) > 0:
             for func in self.callback_func:
+                if len(self.callback_func) > 0:
+                    self.callback_func.pop(0)
+
                 generator = func(response = response)
                 self._dealCallBack(generator)
-
-            del self.callback_func[:]
-
 
     def _dealCallBack(self, req_generator):
         try:
@@ -79,13 +79,14 @@ class Myscrapy(object):
                     if req.callback is not None:
                         self.callback_func.append(req.callback)
 
-                    Trans_obj = self.Trans(url, method)
-
-                    self.callback_func.append(Trans_obj)
-
-            self._SendRequest()
+                    Trans_obj = self.Trans(url= url, method = method, cache_obj = self.Cache)
+                    self.content.append(Trans_obj)
+                    #self.callback_func.append(req.callback)
+                    self._SendRequest()
         except:
             return
+
+    #def _sendCallBack(self):
 
 
 
