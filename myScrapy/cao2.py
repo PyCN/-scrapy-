@@ -8,6 +8,5 @@
 # app = example1()
 #
 # print isinstance(app, app.__class__)
-x=1
-if 1 == x:
-    raise TypeError("error test")
+a = ['a','b','c']
+print str('-').join(a)

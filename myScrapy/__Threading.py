@@ -2,10 +2,11 @@ import threading
 import Queue
 import urllib2
 import urllib
+import cookielib
 
 from lxml import etree
 
-from Schedule import schedule
+from Cache import response_obj
 from Mylogging import INFO,WARNING
 
 
@@ -33,15 +34,18 @@ class ScrapyWorker(threading.Thread):
             url = item_obj.url
             method = item_obj.method if item_obj.method else 'GET'
             cache = item_obj.cache
+            headers = item_obj.headers or None
+            use_cookie = item_obj.use_cookie or None
             try:
                 formdata = item_obj.formdata if item_obj.formdata else None
             except:
                 formdata = None
 
             if method == 'GET':
-                response = self.get_url(url)
-                xpath_obj = self.deal_response_with_xpath(response)
-                cache.Response_Cache = xpath_obj
+                response = response_obj()
+                response.string, response.cookie = self.get_url(url, headers, use_cookie)
+                xpath_obj = self.deal_response_with_xpath(response.string)
+                cache.Response_Cache = response
 
             if method == 'POST':
                 response = self.post_url(url, formdata)
@@ -49,18 +53,24 @@ class ScrapyWorker(threading.Thread):
                 cache.Response_Cache = xpath_obj
 
 
-    def get_url(self, url):
+    def get_url(self, url, headers, use_cookie):
 
         if not isinstance(url, str):
             raise 'url must be a string'
-        req = urllib2.Request(url)
+        req = urllib2.Request(url, headers = headers)
         try:
-            response = urllib2.urlopen(req)
+            if use_cookie is None:
+                response = urllib2.urlopen(req)
+            else:
+                cookie = cookielib.CookieJar()
+                handler = urllib2.HTTPCookieProcessor(cookie)
+                opener = urllib2.build_opener(handler)
+                response = opener.open(req)
         except urllib2.HTTPError:
             raise 'get url error!!'
         the_page = response.read()
 
-        return the_page
+        return the_page, cookie
 
     def deal_response_with_xpath(self, content):
         html = etree.HTML(content.decode('utf-8'))

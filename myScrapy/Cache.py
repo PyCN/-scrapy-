@@ -18,7 +18,7 @@ class Cache(object):
 
 
 class Trans(object):
-    __slots__ = ('url', 'method', 'cache','formdata')
+    __slots__ = ('url', 'method', 'cache','formdata', 'headers', 'use_cookie')
 
     def __init__(self, **kwargs):
         self.url = kwargs.pop('url')
@@ -27,3 +27,30 @@ class Trans(object):
         temp_dict = kwargs.get('formdata', None)
         if temp_dict:
             self.formdata = [(k, v) for k, v in temp_dict.iteritems()]
+        self.headers = kwargs.get('headers', None)
+        self.use_cookie = kwargs.get('use_cookie', None)
+
+class response_obj(object):
+    __slots__ = ('text', 'cookie')
+
+    def __init__(self, response_str = None, cookie = None):
+        self.response_string = response_str
+        self.cookie = cookie
+
+    @property
+    def text(self):
+        return self.string
+    @text.setter
+    def text(self, value):
+        if not isinstance(value, str):
+            raise 'response_obj type error!!'
+        self.response_string = value
+
+    @property
+    def cookie(self):
+        return self.cookie
+    @cookie.setter
+    def cookie(self, value):
+        self.cookie = value
+
+

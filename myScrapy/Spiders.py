@@ -35,6 +35,8 @@ class Myscrapy(object):
                 url = req.url
                 method = req.method
                 formdata = None
+                headers = req.headers
+                use_cookie = req.use_cookie
 
                 if method == 'POST':
                     formdata = req.formdata
@@ -42,7 +44,7 @@ class Myscrapy(object):
                 if req.callback is not None:
                     self.callback_func.append(req.callback)
 
-                Trans_obj = self.Trans(url = url, cache_obj = self.Cache, method = method) \
+                Trans_obj = self.Trans(url = url, cache_obj = self.Cache, method = method, headers = headers, use_cookie = use_cookie) \
                     if formdata is None else self.Trans(url=url, cache_obj=self.Cache, method=method, formdata = formdata)
                 self.content.append(Trans_obj)
 
