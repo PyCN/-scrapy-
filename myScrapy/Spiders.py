@@ -2,7 +2,7 @@
 
 
 from __Threading import ThreadManager
-from Download import Download
+#from Download import Download
 from Cache import Cache, Trans
 import Config_paser
 
@@ -10,7 +10,7 @@ class Myscrapy(object):
     # Get response from website
     ReqtoWeb = ThreadManager(num_threading = 10)#int(Config_paser.num_threading)#)
     # This is for download files
-    Downloader = Download
+    #Downloader = Download
     #a helper class
     Trans = Trans
     # For storage response temporary
@@ -36,7 +36,7 @@ class Myscrapy(object):
                 method = req.method
                 formdata = None
                 headers = req.headers
-                use_cookie = req.use_cookie
+                cookieJar = req.meta
 
                 if method == 'POST':
                     formdata = req.formdata
@@ -44,7 +44,7 @@ class Myscrapy(object):
                 if req.callback is not None:
                     self.callback_func.append(req.callback)
 
-                Trans_obj = self.Trans(url = url, cache_obj = self.Cache, method = method, headers = headers, use_cookie = use_cookie) \
+                Trans_obj = self.Trans(url = url, cache_obj = self.Cache, method = method, headers = headers, cookieJar = cookieJar) \
                     if formdata is None else self.Trans(url=url, cache_obj=self.Cache, method=method, formdata = formdata)
                 self.content.append(Trans_obj)
 
