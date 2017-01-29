@@ -34,8 +34,15 @@ class ScrapyWorker(threading.Thread):
             url = item_obj.url
             method = item_obj.method if item_obj.method else 'GET'
             cache = item_obj.cache
-            headers = item_obj.headers or None
-            use_cookie = item_obj.use_cookie or None
+            headers = item_obj.headers or {}
+            meta = item_obj.cookieJar or None
+            cookie = None
+
+            if not isinstance(meta, dict):
+                WARNING('meta should be a dict')
+            else:
+                cookie = meta.get('cookieJar', None)
+
             try:
                 formdata = item_obj.formdata if item_obj.formdata else None
             except:
@@ -43,29 +50,37 @@ class ScrapyWorker(threading.Thread):
 
             if method == 'GET':
                 response = response_obj()
-                response.string, response.cookie = self.get_url(url, headers, use_cookie)
-                xpath_obj = self.deal_response_with_xpath(response.string)
+                http_response, http_cookie = self.get_url(url, headers, cookie)
+                response.cookie = http_cookie
+                response.response_string = self.deal_response_with_xpath(http_response)
                 cache.Response_Cache = response
 
             if method == 'POST':
-                response = self.post_url(url, formdata)
-                xpath_obj = self.deal_response_with_xpath(response)
-                cache.Response_Cache = xpath_obj
+                response = response_obj()
+                http_response, http_cookie = self.get_url(url, formdata, headers, cookie)
+                response.cookie = http_cookie
+                response.response_string = self.deal_response_with_xpath(http_response)
+                cache.Response_Cache = response
 
 
-    def get_url(self, url, headers, use_cookie):
+    def get_url(self, url, headers, cookie):
 
         if not isinstance(url, str):
-            raise 'url must be a string'
-        req = urllib2.Request(url, headers = headers)
+            raise 'url or cookie type error!!'
+        req = urllib2.Request(url, None, headers)
         try:
-            if use_cookie is None:
+            if not isinstance(cookie, cookielib.CookieJar) and cookie is None:
                 response = urllib2.urlopen(req)
-            else:
+            elif not isinstance(cookie, cookielib.CookieJar) and cookie is not None:
                 cookie = cookielib.CookieJar()
                 handler = urllib2.HTTPCookieProcessor(cookie)
                 opener = urllib2.build_opener(handler)
                 response = opener.open(req)
+            elif isinstance(cookie, cookielib.CookieJar):
+                handler = urllib2.HTTPCookieProcessor(cookie)
+                opener = urllib2.build_opener(handler)
+                response = opener.open(req)
+
         except urllib2.HTTPError:
             raise 'get url error!!'
         the_page = response.read()
@@ -76,19 +91,29 @@ class ScrapyWorker(threading.Thread):
         html = etree.HTML(content.decode('utf-8'))
         return html
 
-    def post_url(self, url, formdata):
+    def post_url(self, url, formdata, headers, cookie):
         if not isinstance(url, str):
             raise 'url must be a string and fordata must be a dict'
         data = urllib.urlencode(formdata)
-        req = urllib2.Request(url, data)
+        req = urllib2.Request(url, data, headers)
         try:
-            response = urllib2.urlopen(req)
+            if not isinstance(cookie, cookielib.CookieJar) and cookie is None:
+                response = urllib2.urlopen(req)
+            elif not isinstance(cookie, cookielib.CookieJar) and cookie is not None:
+                cookie = cookielib.CookieJar()
+                handler = urllib2.HTTPCookieProcessor(cookie)
+                opener = urllib2.build_opener(handler)
+                response = opener.open(req)
+            elif isinstance(cookie, cookielib.CookieJar):
+                handler = urllib2.HTTPCookieProcessor(cookie)
+                opener = urllib2.build_opener(handler)
+                response = opener.open(req)
+
         except urllib2.HTTPError:
             raise 'get url error!!'
-
         the_page = response.read()
 
-        return the_page
+        return the_page, cookie
 
 
 class ThreadManager(object):
