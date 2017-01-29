@@ -17,7 +17,7 @@ def str_to_unicode(text, encoding='utf-8'):
 
 
 class Request(object):
-    __slots__ = ['encoding','formdata','url','method','headers','callback','filename','download_type','headers','use_cookie']
+    __slots__ = ['encoding','formdata','url','method','headers','callback','filename','download_type','headers','meta']
     def __init__(self, *args, **kwargs):
 
         try:
@@ -82,9 +82,9 @@ class Request(object):
             self.headers = None
 
         try:
-            self.use_cookie = kwargs.pop('use_cookie')
+            self.meta = kwargs.pop('meta')
         except Exception:
-            self.use_cookie = None
+            self.meta = None
 
 
 
